@@ -1369,10 +1369,13 @@ function startApp() {
     }
 
 
-    
 
 
-    function paint_instanced_mesh_clean() {
+    var create_new_voxels_here = [];
+
+
+
+    function paint_instanced_mesh_clean_NEW() {s
 
 
 
@@ -1414,11 +1417,217 @@ function startApp() {
 
                         const these_coordinates = [];
 
+                        these_coordinates.push(var_x);
+                        these_coordinates.push(var_y);
+                        these_coordinates.push(var_z);
+
+                        create_new_voxels_here.push(these_coordinates);
+
+
+
+                        console.log("voxel created");
+
+
+
+                        /*
+                        const instancedMesh = new THREE.InstancedMesh(
+                            voxel_geometry,
+                            new THREE.MeshPhongMaterial()
+                        );
+
+
+                        const temp = new THREE.Object3D()
+
+
+                        for (let i = 0; i < voxel_position_list.length; i++) {
+                          
+                            temp.position.set(voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2]);
+                            temp.updateMatrix();
+                            instancedMesh.setMatrixAt(i, temp.matrix);
+
+                        }
+                        
+                        instancedMesh.instanceMatrix.needsUpdate = true;
+
+
+
+                        scene.add( instancedMesh );
+
+                        */
+
+
+                        /*
+                        function createInstances(i_x, i_y, i_z, temp = new THREE.Object3D()) {
+
+                            var this_x = i_x;
+                            var this_y = i_y;
+                            var this_z = i_z;
+
+                            const instancedMesh = new THREE.InstancedMesh(
+                                new THREE.BoxGeometry(),
+                                new THREE.MeshPhongMaterial()
+                            );
+                        
+                            
+                            temp.position.set(this_x, this_y, this_z);
+                            temp.updateMatrix();
+                            instancedMesh.setMatrixAt(1, temp.matrix);
+                            
+                        
+                            instancedMesh.instanceMatrix.needsUpdate = true;
+                        
+                            return instancedMesh;
+                        }
+                        */
+
+
+                        //const voxel_cube = createInstances(var_x + 0.5 , var_y + 0.5, var_z + 0.5);
+
+                        
+                        /*
+                        // old way to create voxels
+                        const voxel_cube = new THREE.InstancedMesh( voxel_geometry, transparent_material_voxel, 1 ); 
+                        //const voxel_cube2 = new THREE.Mesh( voxel_geometry, wireframe_material_voxel );
+
+
+                        voxel_cube.position.set( var_x + 0.5 , var_y + 0.5, var_z + 0.5);
+                        //voxel_cube2.position.set( var_x + 0.5, var_y + 0.5 , var_z + 0.5);
+
+                        //voxel_cube.instanceMatrix.setUsage( THREE.DynamicDrawUsage );
+
+                        voxel_list.push(voxel_cube);
+
+                        scene.add( voxel_cube );
+                        //scene.add( voxel_cube2 );
+
+                        console.group(voxel_cube);
+                        */
+                        
+
+
+
+
+                    }
+                    
+
+                }
+
+
+            }
+
+
+
+
+            // gets inlyx executed if minimum 1 new voxel can be created
+            if (create_new_voxels == true){
+
+            
+                removeObject( voxel_list[0]);
+                voxel_list = [];
+
+                ///voxel_grid[][][];
+                create_new_voxels_here
+
+
+                //const geometry = new THREE.IcosahedronGeometry( 0.5, 3 );
+                //const material = new THREE.MeshPhongMaterial( { color: 0xffffff } );
+                //const material = new THREE.MeshNormalMaterial( );
+
+
+                var count = voxel_position_list.length;
+
+                var instanced_mesh = new THREE.InstancedMesh( voxel_geometry, normal_voxel_material,  count );
+
+                const matrix = new THREE.Matrix4();
+
+
+                for (let i = 0; i < voxel_position_list.length; i++) {
+                
+                    matrix.setPosition( voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2] );
+
+                    instanced_mesh.setMatrixAt( i, matrix );
+                    //mesh.setColorAt( i, color );
+
+                }
+                
+
+                voxel_list.push(instanced_mesh);
+
+                scene.add( instanced_mesh );
+
+
+
+                
+
+
+            }
+
+
+        }
+
+    }
+
+
+
+    
+
+
+    function paint_instanced_mesh_clean() {
+
+
+
+        // function should only be executed when the painting button is pressed
+        if( key32 == true ) {
+
+            var create_new_voxels = false;
+
+
+            // durch die toolhead liste durch iterieren um an jeder position einen voxel zu erstellen 
+            
+            for (let i = 0; i < toolhead_list.length; i++) {
+                
+                
+
+
+                const var_x = Math.floor(toolhead_list[i].position.x)
+                const var_y = Math.floor(toolhead_list[i].position.y)
+                const var_z = Math.floor(toolhead_list[i].position.z)
+
+
+                // checken ob die coordinaten innerhalb des workspaces liegen. wenn nicht, wird nichts gemacht.
+                if (var_x >= 0 && var_y >= 0 && var_z >= 0 && var_x < x_size && var_y < y_size && var_z < z_size){
+
+
+
+                    if (   voxel_grid [var_x] [var_y] [var_z]  == 0  ) {
+
+                        //console.log( voxel_grid[Math.floor ( toolhead.position.x ) ][ Math.floor(toolhead.position.y)]  );
+                        //console.log("000")
+
+                        // den wert im voxel grid auf 1 setzent
+
+                        create_new_voxels = true;
+
+
+                        voxel_grid[var_x][var_y][var_z] = 1;
+
+                        /*
+                        const these_coordinates = [];
+
                         these_coordinates.push(var_x + 0.5);
                         these_coordinates.push(var_y + 0.5);
                         these_coordinates.push(var_z + 0.5);
 
                         voxel_position_list.push(these_coordinates);
+                        */
+
+
+                        var this_point = new THREE.Vector3(var_x + 0.5, var_y + 0.5, var_z + 0.5)
+
+                        voxel_position_list.push(this_point);
+
+
+
 
 
 
@@ -1538,7 +1747,8 @@ function startApp() {
 
                 for (let i = 0; i < voxel_position_list.length; i++) {
                 
-                    matrix.setPosition( voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2] );
+                    //matrix.setPosition( voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2] );
+                    matrix.setPosition( voxel_position_list[i].x, voxel_position_list[i].y, voxel_position_list[i].z );
 
                     instanced_mesh.setMatrixAt( i, matrix );
                     //mesh.setColorAt( i, color );
@@ -1836,12 +2046,21 @@ function startApp() {
     // --------------------------------------------- ERASE FUNCTION ----------------------------------------------- 
 
 
+    var voxels_to_erase = [];
+
+
+
+
     function erase(){
 
 
 
         // es wird nur etwas ausgeführt wenn der löschen key gedrückt wird
         if (key17 == true) {
+
+
+            var erase_voxels = false;
+
 
 
 
@@ -1861,9 +2080,27 @@ function startApp() {
                     // jetzt wird geschaut ob an der stelle im grid ein voxel ist
                     if (   voxel_grid [var_x] [var_y] [var_z]  == 1  ) {
 
+                        erase_voxels = true;
+
                         
+                        /*
+                        const these_coordinates = [];
+
+                        these_coordinates.push(var_x + 0.5);
+                        these_coordinates.push(var_y + 0.5);
+                        these_coordinates.push(var_z + 0.5);
+
+                        voxels_to_erase.push(these_coordinates);
+                        */
+
+                        var this_point = new THREE.Vector3(var_x + 0.5, var_y + 0.5, var_z + 0.5)
+
+                        voxels_to_erase.push(this_point);
+
+
+
                         //falls ja, wird der wert an dieser stelle wieder auf 1 gesetzt
-                        voxel_grid[var_x][var_y][var_z] = 0
+                        voxel_grid[var_x][var_y][var_z] = 0;
 
 
                         
@@ -1887,6 +2124,131 @@ function startApp() {
 
 
             }
+
+
+            // gets inlyx executed if minimum 1 new voxel can be created
+            if (erase_voxels == true){
+
+                console.log("JAAAAAA");
+
+            
+                removeObject( voxel_list[0]);
+                voxel_list = [];
+
+                //console.log(voxel_list.length);
+
+
+
+                //const geometry = new THREE.IcosahedronGeometry( 0.5, 3 );
+                //const material = new THREE.MeshPhongMaterial( { color: 0xffffff } );
+                //const material = new THREE.MeshNormalMaterial( );
+
+
+                //var count = voxel_position_list.length;
+
+                //var instanced_mesh = new THREE.InstancedMesh( voxel_geometry, normal_voxel_material,  count );
+
+                //const matrix = new THREE.Matrix4();
+
+                /*
+                for (let i = 0; i < voxel_position_list.length; i++) {
+
+
+                    if(voxels_to_erase[i][0] == voxel_position_list[i][0] && voxels_to_erase[i][1] == voxel_position_list[i][1] && voxels_to_erase[i][2] == voxel_position_list[i][2] ){
+
+
+
+
+                    }
+
+                
+                    matrix.setPosition( voxel_position_list[i][0], voxel_position_list[i][1], voxel_position_list[i][2] );
+
+                    instanced_mesh.setMatrixAt( i, matrix );
+                    //mesh.setColorAt( i, color );
+
+                }
+
+                */
+
+                //const A = [1, 4, 3, 2]
+                //voxel_position_list
+
+                //const B = [0, 2, 1, 2]
+                //voxels_to_erase
+
+                var new_voxel_position_list = []
+
+
+
+                console.log(voxel_position_list.length);
+
+
+
+                //voxel_position_list = voxel_position_list.filter(n => !voxels_to_erase.includes(n));
+
+                //voxel_position_list = voxel_position_list.filter(item1 => !voxels_to_erase.some(item2 => item1.id === item2.id));
+
+
+
+                /*
+                voxel_position_list = voxel_position_list.filter(pos => {
+                    // Überprüfen, ob die Position nicht in voxels_to_erase enthalten ist
+                    return !voxels_to_erase.some(point => point.equals(pos));
+                });
+
+                */
+
+                voxel_position_list = voxel_position_list.filter(pos => {
+                    // Überprüfen, ob die Position nicht in voxels_to_erase enthalten ist
+                    return !voxels_to_erase.some(point => 
+                        point.x === pos.x && point.y === pos.y && point.z === pos.z
+                    );
+                });
+                
+
+                voxels_to_erase = [];
+                
+
+                //voxel_position_list = new_voxel_position_list
+
+
+                console.log(voxel_position_list.length);
+                
+
+                //voxel_list.push(instanced_mesh);
+
+                //scene.add( instanced_mesh );
+
+
+
+
+                var count = voxel_position_list.length;
+
+                var instanced_mesh = new THREE.InstancedMesh( voxel_geometry, normal_voxel_material,  count );
+
+                const matrix = new THREE.Matrix4();
+
+
+                for (let i = 0; i < voxel_position_list.length; i++) {
+                
+                    matrix.setPosition( voxel_position_list[i].x, voxel_position_list[i].y, voxel_position_list[i].z );
+
+                    instanced_mesh.setMatrixAt( i, matrix );
+                    //mesh.setColorAt( i, color );
+
+                }
+                
+
+                voxel_list.push(instanced_mesh);
+
+                scene.add( instanced_mesh );
+
+                
+
+
+            }
+
 
 
         }
